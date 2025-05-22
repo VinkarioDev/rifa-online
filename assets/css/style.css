@@ -1,0 +1,83 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: #FF5A01;
+}
+
+.container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.img img {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.numbers {
+  background-color: #EDAA86;
+  width: 100%;
+  max-width: 1000px;
+  padding: 20px;
+  border-radius: 9px;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr); /* 10 números por linha */
+  gap: 10px;
+  justify-items: center;
+}
+
+.numbers a {
+  text-decoration: none;
+  color: black;
+  font-size: 18px;
+  background-color: #fff;
+  padding: 12px;
+  border-radius: 50%;
+  text-align: center;
+  width: 50px;
+  height: 50px;
+  line-height: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.numbers a:hover {
+  background-color: #f3f3f3;
+}
+
+.numbers a.vendido {
+  background-color: #aaa;
+  color: white;
+  pointer-events: auto; /* permite clicar */
+}
+
+@media (max-width: 600px) {
+  .numbers {
+    grid-template-columns: repeat(5, 1fr); /* menos números por linha no celular */
+  }
+
+  .numbers a {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .img img {
+    max-width: 200px;
+  }
+}

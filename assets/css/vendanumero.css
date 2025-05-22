@@ -1,0 +1,99 @@
+   * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      background-color: #FF5A01;
+    }
+    .container {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .img img {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #fff;
+      margin-bottom: 20px;
+      font-size: 24px;
+      text-align: center;
+    }
+    .info-comprador {
+      background-color: #EDAA86;
+      width: 100%;
+      max-width: 500px;
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+    }
+    .info-comprador input {
+      width: 100%;
+      max-width: 400px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #FF5A01;
+      font-size: 16px;
+    }
+    .info-comprador input:focus {
+      outline: none;
+      border: 2px solid #FF5A01;
+    }
+    .botoes {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+    .save,
+    .cancel {
+      width: 140px;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .save {
+      background-color: #FF5A01;
+      color: white;
+    }
+    .save:hover {
+      background-color: #e24f00;
+    }
+    .cancel {
+      background-color: #c0392b;
+      color: white;
+    }
+    .cancel:hover {
+      background-color: #992d22;
+    }
+    /* estilos para exibir dados do comprador */
+    .dados-comprador {
+      background-color: #fff3e0;
+      color: #222;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      font-size: 18px;
+    }
+    .dados-comprador p {
+      margin-bottom: 10px;
+      word-break: break-word;
+    }

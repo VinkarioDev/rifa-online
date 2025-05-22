@@ -1,11 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rifa Online</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rifa Online</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    
+  <section class="container">
+    <div class="img">
+      <img src="assets/images/logo.png" alt="logo" />
+    </div>
+
+    <div class="numbers" id="numbers-grid"></div>
+  </section>
+
+  <script >
+    document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("numbers-grid");
+
+  // Recupera objeto com dados dos números vendidos e compradores
+  const vendas = JSON.parse(localStorage.getItem("vendas")) || {};
+
+  for (let i = 1; i <= 400; i++) {
+    const num = i.toString().padStart(3, "0");
+    const a = document.createElement("a");
+    a.textContent = num;
+    a.href = `vendanumero.html?numero=${num}`;
+
+    if (vendas[num]) {
+      a.classList.add("vendido");
+    }
+
+    container.appendChild(a);
+  }
+});
+
+
+  </script>
 </body>
 </html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadastro de Comprador</title>
+  <link rel="stylesheet" href="assets/css/vendanumero.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <section class="container">
+    <div class="img">
+      <img src="assets/images/logo.png" alt="Logo" />
+    </div>
+
+    <h1>Número Selecionado: <span id="numero-selecionado">---</span></h1>
+
+    <div id="info-section">
+      <!-- Aqui entra o formulário OU dados do comprador -->
+    </div>
+  </section>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const numero = params.get("numero");
+    const spanNumero = document.getElementById("numero-selecionado");
+    const infoSection = document.getElementById("info-section");
+
+    spanNumero.textContent = numero || "---";
+
+    // Recupera objeto com dados dos números vendidos e compradores
+    let vendas = JSON.parse(localStorage.getItem("vendas")) || {};
+
+    // Verifica se o número já foi vendido (tem dados)
+    if (vendas[numero]) {
+      // Mostrar dados do comprador e botão cancelar venda
+      infoSection.innerHTML = `
+        <div class="dados-comprador" style="margin-bottom: 20px;">
+          <p><strong>Nome:</strong> ${vendas[numero].nome}</p>
+          <p><strong>Telefone:</strong> ${vendas[numero].telefone}</p>
+        </div>
+        <div class="botoes">
+          <button class="cancel">Cancelar Venda</button>
+        </div>
+      `;
+
+      const btnCancelar = infoSection.querySelector(".cancel");
+      btnCancelar.addEventListener("click", () => {
+        if (confirm(`Tem certeza que quer cancelar a venda do número ${numero}?`)) {
+          delete vendas[numero];
+          localStorage.setItem("vendas", JSON.stringify(vendas));
+          alert(`Venda do número ${numero} cancelada.`);
+          window.location.href = "index.html";
+        }
+      });
+
+    } else {
+      // Mostrar formulário para cadastro
+      infoSection.innerHTML = `
+        <div class="info-comprador">
+          <input type="text" id="nome" placeholder="Nome do Comprador" />
+          <input type="tel" maxlength="15" id="telefone" placeholder="Número do Telefone" />
+          <div class="botoes">
+            <button class="save">Salvar</button>
+            <button class="cancel">Cancelar</button>
+          </div>
+        </div>
+      `;
+
+      const btnSalvar = infoSection.querySelector(".save");
+      const btnCancelar = infoSection.querySelector(".cancel");
+
+      btnSalvar.addEventListener("click", () => {
+        const nome = document.getElementById("nome").value.trim();
+        const telefone = document.getElementById("telefone").value.trim();
+
+        if (!nome || !telefone) {
+          alert("Por favor, preencha todos os campos.");
+          return;
+        }
+
+        vendas[numero] = { nome, telefone };
+        localStorage.setItem("vendas", JSON.stringify(vendas));
+        alert(`Número ${numero} vendido com sucesso para ${nome}!`);
+        window.location.href = "index.html";
+      });
+
+      btnCancelar.addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+    }
+  </script>
+</body>
+</html>
