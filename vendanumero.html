@@ -6,10 +6,9 @@
   <title>Cadastro de Comprador</title>
   <link rel="stylesheet" href="assets/css/vendanumero.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="venda.js" defer></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="venda.js" defer></script>
 </head>
 <body>
   <section class="container">
@@ -20,79 +19,85 @@
     <h1>Número Selecionado: <span id="numero-selecionado">---</span></h1>
 
     <div id="info-section">
-      <!-- Aqui entra o formulário OU dados do comprador -->
+      <form class="info-comprador">
+        <input type="text" id="nome" placeholder="Nome do comprador" />
+        <input type="tel" id="telefone" placeholder="Telefone" maxlength="15" />
+        <div class="botoes">
+          <button type="button" class="save">Salvar</button>
+          <button type="button" class="cancel">Cancelar</button>
+        </div>
+      </form>
     </div>
   </section>
 
   <script>
    document.addEventListener("DOMContentLoaded", async () => {
-  const params = new URLSearchParams(window.location.search);
-  const numero = params.get("numero");
+      const params = new URLSearchParams(window.location.search);
+      const numero = params.get("numero");
 
-  const h1 = document.querySelector("h1");
-  const inputNome = document.getElementById("nome");
-  const inputTelefone = document.getElementById("telefone");
-  const botaoSalvar = document.querySelector(".save");
-  const botaoCancelar = document.querySelector(".cancelar");
+      const h1 = document.querySelector("h1");
+      const inputNome = document.getElementById("nome");
+      const inputTelefone = document.getElementById("telefone");
+      const botaoSalvar = document.querySelector(".save");
+      const botaoCancelar = document.querySelector(".cancel");
 
-  h1.textContent = `Número Selecionado: ${numero}`;
+      h1.textContent = `Número Selecionado: ${numero}`;
 
-  // Verificar se já está vendido
-  const { data } = await supabase.from("vendas").select("*").eq("numero", parseInt(numero)).single();
+      // Verificar se já está vendido
+      const { data } = await supabase.from("vendas").select("*").eq("numero", parseInt(numero)).single();
 
-  if (data) {
-    // Mostrar comprador
-    inputNome.value = data.nome_comprador;
-    inputTelefone.value = data.telefone;
+      if (data) {
+        // Mostrar dados comprador
+        inputNome.value = data.nome_comprador;
+        inputTelefone.value = data.telefone;
 
-    inputNome.disabled = true;
-    inputTelefone.disabled = true;
-    botaoSalvar.style.display = "none";
-    botaoCancelar.style.display = "block";
-  } else {
-    // Formulário ativo
-    botaoSalvar.style.display = "block";
-    botaoCancelar.style.display = "none";
-  }
+        inputNome.disabled = true;
+        inputTelefone.disabled = true;
+        botaoSalvar.style.display = "none";
+        botaoCancelar.style.display = "block";
+      } else {
+        // Formulário ativo
+        botaoSalvar.style.display = "block";
+        botaoCancelar.style.display = "none";
+      }
 
-  // Salvar venda
-  botaoSalvar.addEventListener("click", async () => {
-    const nome = inputNome.value.trim();
-    const telefone = inputTelefone.value.trim();
+      // Salvar venda
+      botaoSalvar.addEventListener("click", async () => {
+        const nome = inputNome.value.trim();
+        const telefone = inputTelefone.value.trim();
 
-    if (!nome || !telefone) {
-      alert("Preencha todos os campos.");
-      return;
-    }
+        if (!nome || !telefone) {
+          alert("Preencha todos os campos.");
+          return;
+        }
 
-    await supabase.from("vendas").insert({
-      numero: parseInt(numero),
-      nome_comprador: nome,
-      telefone: telefone
+        await supabase.from("vendas").insert({
+          numero: parseInt(numero),
+          nome_comprador: nome,
+          telefone: telefone
+        });
+
+        alert("Venda salva!");
+        window.location.href = "index.html";
+      });
+
+      // Cancelar venda
+      botaoCancelar.addEventListener("click", async () => {
+        const confirmacao = confirm("Deseja realmente cancelar esta venda?");
+        if (confirmacao) {
+          await supabase.from("vendas").delete().eq("numero", parseInt(numero));
+          alert("Venda cancelada!");
+          window.location.href = "index.html";
+        }
+      });
+
+      // Formatar telefone
+      inputTelefone.addEventListener("input", () => {
+        let valor = inputTelefone.value.replace(/\D/g, "").slice(0, 11);
+        valor = valor.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+        inputTelefone.value = valor;
+      });
     });
-
-    alert("Venda salva!");
-    window.location.href = "index.html";
-  });
-
-  // Cancelar venda
-  botaoCancelar.addEventListener("click", async () => {
-    const confirmacao = confirm("Deseja realmente cancelar esta venda?");
-    if (confirmacao) {
-      await supabase.from("vendas").delete().eq("numero", parseInt(numero));
-      alert("Venda cancelada!");
-      window.location.href = "index.html";
-    }
-  });
-
-  // Formatar telefone
-  inputTelefone.addEventListener("input", () => {
-    let valor = inputTelefone.value.replace(/\D/g, "").slice(0, 11);
-    valor = valor.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
-    inputTelefone.value = valor;
-  });
-});
-
   </script>
 </body>
 </html>
