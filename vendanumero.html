@@ -6,6 +6,9 @@
   <title>Cadastro de Comprador</title>
   <link rel="stylesheet" href="assets/css/vendanumero.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
 </head>
 <body>
   <section class="container">
@@ -21,74 +24,74 @@
   </section>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const numero = params.get("numero");
-    const spanNumero = document.getElementById("numero-selecionado");
-    const infoSection = document.getElementById("info-section");
+   document.addEventListener("DOMContentLoaded", async () => {
+  const params = new URLSearchParams(window.location.search);
+  const numero = params.get("numero");
 
-    spanNumero.textContent = numero || "---";
+  const h1 = document.querySelector("h1");
+  const inputNome = document.getElementById("nome");
+  const inputTelefone = document.getElementById("telefone");
+  const botaoSalvar = document.querySelector(".save");
+  const botaoCancelar = document.querySelector(".cancelar");
 
-    // Recupera objeto com dados dos números vendidos e compradores
-    let vendas = JSON.parse(localStorage.getItem("vendas")) || {};
+  h1.textContent = `Número Selecionado: ${numero}`;
 
-    // Verifica se o número já foi vendido (tem dados)
-    if (vendas[numero]) {
-      // Mostrar dados do comprador e botão cancelar venda
-      infoSection.innerHTML = `
-        <div class="dados-comprador" style="margin-bottom: 20px;">
-          <p><strong>Nome:</strong> ${vendas[numero].nome}</p>
-          <p><strong>Telefone:</strong> ${vendas[numero].telefone}</p>
-        </div>
-        <div class="botoes">
-          <button class="cancel">Cancelar Venda</button>
-        </div>
-      `;
+  // Verificar se já está vendido
+  const { data } = await supabase.from("vendas").select("*").eq("numero", parseInt(numero)).single();
 
-      const btnCancelar = infoSection.querySelector(".cancel");
-      btnCancelar.addEventListener("click", () => {
-        if (confirm(`Tem certeza que quer cancelar a venda do número ${numero}?`)) {
-          delete vendas[numero];
-          localStorage.setItem("vendas", JSON.stringify(vendas));
-          alert(`Venda do número ${numero} cancelada.`);
-          window.location.href = "index.html";
-        }
-      });
+  if (data) {
+    // Mostrar comprador
+    inputNome.value = data.nome_comprador;
+    inputTelefone.value = data.telefone;
 
-    } else {
-      // Mostrar formulário para cadastro
-      infoSection.innerHTML = `
-        <div class="info-comprador">
-          <input type="text" id="nome" placeholder="Nome do Comprador" />
-          <input type="tel" maxlength="15" id="telefone" placeholder="Número do Telefone" />
-          <div class="botoes">
-            <button class="save">Salvar</button>
-            <button class="cancel">Cancelar</button>
-          </div>
-        </div>
-      `;
+    inputNome.disabled = true;
+    inputTelefone.disabled = true;
+    botaoSalvar.style.display = "none";
+    botaoCancelar.style.display = "block";
+  } else {
+    // Formulário ativo
+    botaoSalvar.style.display = "block";
+    botaoCancelar.style.display = "none";
+  }
 
-      const btnSalvar = infoSection.querySelector(".save");
-      const btnCancelar = infoSection.querySelector(".cancel");
+  // Salvar venda
+  botaoSalvar.addEventListener("click", async () => {
+    const nome = inputNome.value.trim();
+    const telefone = inputTelefone.value.trim();
 
-      btnSalvar.addEventListener("click", () => {
-        const nome = document.getElementById("nome").value.trim();
-        const telefone = document.getElementById("telefone").value.trim();
-
-        if (!nome || !telefone) {
-          alert("Por favor, preencha todos os campos.");
-          return;
-        }
-
-        vendas[numero] = { nome, telefone };
-        localStorage.setItem("vendas", JSON.stringify(vendas));
-        alert(`Número ${numero} vendido com sucesso para ${nome}!`);
-        window.location.href = "index.html";
-      });
-
-      btnCancelar.addEventListener("click", () => {
-        window.location.href = "index.html";
-      });
+    if (!nome || !telefone) {
+      alert("Preencha todos os campos.");
+      return;
     }
+
+    await supabase.from("vendas").insert({
+      numero: parseInt(numero),
+      nome_comprador: nome,
+      telefone: telefone
+    });
+
+    alert("Venda salva!");
+    window.location.href = "index.html";
+  });
+
+  // Cancelar venda
+  botaoCancelar.addEventListener("click", async () => {
+    const confirmacao = confirm("Deseja realmente cancelar esta venda?");
+    if (confirmacao) {
+      await supabase.from("vendas").delete().eq("numero", parseInt(numero));
+      alert("Venda cancelada!");
+      window.location.href = "index.html";
+    }
+  });
+
+  // Formatar telefone
+  inputTelefone.addEventListener("input", () => {
+    let valor = inputTelefone.value.replace(/\D/g, "").slice(0, 11);
+    valor = valor.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+    inputTelefone.value = valor;
+  });
+});
+
   </script>
 </body>
 </html>

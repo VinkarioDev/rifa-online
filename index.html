@@ -6,6 +6,10 @@
   <title>Rifa Online</title>
   <link rel="stylesheet" href="assets/css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+
 </head>
 <body>
   <section class="container">
@@ -17,25 +21,30 @@
   </section>
 
   <script >
-    document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("numbers-grid");
-
-  // Recupera objeto com dados dos números vendidos e compradores
-  const vendas = JSON.parse(localStorage.getItem("vendas")) || {};
+   document.addEventListener("DOMContentLoaded", async () => {
+  const container = document.querySelector(".numbers");
 
   for (let i = 1; i <= 400; i++) {
-    const num = i.toString().padStart(3, "0");
-    const a = document.createElement("a");
-    a.textContent = num;
-    a.href = `vendanumero.html?numero=${num}`;
+    const numero = i.toString().padStart(3, "0");
+    const link = document.createElement("a");
+    link.textContent = numero;
+    link.href = `venda.html?numero=${numero}`;
+    link.classList.add("numero");
+    link.dataset.numero = numero;
+    container.appendChild(link);
+  }
 
-    if (vendas[num]) {
-      a.classList.add("vendido");
-    }
+  // Marcar vendidos
+  const { data, error } = await supabase.from("vendas").select("numero");
 
-    container.appendChild(a);
+  if (data) {
+    data.forEach(item => {
+      const el = document.querySelector(`a[data-numero='${item.numero.toString().padStart(3, '0')}']`);
+      if (el) el.classList.add("vendido");
+    });
   }
 });
+
 
 
   </script>
