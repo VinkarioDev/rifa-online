@@ -1,53 +1,54 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rifa Online</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="index.js" defer></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rifa Online</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="index.js" defer></script>
+  </head>
+  <body>
+    <section class="container">
+      <div class="img">
+        <img src="assets/images/logo.png" alt="logo" />
+      </div>
 
+      <div class="numbers" id="numbers-grid"></div>
+    </section>
 
-</head>
-<body>
-  <section class="container">
-    <div class="img">
-      <img src="assets/images/logo.png" alt="logo" />
-    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const container = document.querySelector(".numbers");
 
-    <div class="numbers" id="numbers-grid"></div>
-  </section>
+        for (let i = 1; i <= 400; i++) {
+          const numero = i.toString().padStart(3, "0");
+          const link = document.createElement("a");
+          link.textContent = numero;
+          link.href = `vendanumero.html?numero=${numero}`;
 
-  <script >
-   document.addEventListener("DOMContentLoaded", async () => {
-  const container = document.querySelector(".numbers");
+          link.classList.add("numero");
+          link.dataset.numero = numero;
+          container.appendChild(link);
+        }
 
-  for (let i = 1; i <= 400; i++) {
-    const numero = i.toString().padStart(3, "0");
-    const link = document.createElement("a");
-    link.textContent = numero;
-    link.href = `venda.html?numero=${numero}`;
-    link.classList.add("numero");
-    link.dataset.numero = numero;
-    container.appendChild(link);
-  }
+        // Marcar vendidos
+        const { data, error } = await supabase.from("vendas").select("numero");
 
-  // Marcar vendidos
-  const { data, error } = await supabase.from("vendas").select("numero");
-
-  if (data) {
-    data.forEach(item => {
-      const el = document.querySelector(`a[data-numero='${item.numero.toString().padStart(3, '0')}']`);
-      if (el) el.classList.add("vendido");
-    });
-  }
-});
-
-
-
-  </script>
-</body>
+        if (data) {
+          data.forEach((item) => {
+            const el = document.querySelector(
+              `a[data-numero='${item.numero.toString().padStart(3, "0")}']`
+            );
+            if (el) el.classList.add("vendido");
+          });
+        }
+      });
+    </script>
+  </body>
 </html>
