@@ -58,7 +58,7 @@
       width: 100%;
     }
     .save,
-    .cancel {
+    .cancel, .edit {
       width: 140px;
       padding: 10px;
       border-radius: 5px;
@@ -82,6 +82,8 @@
     .cancel:hover {
       background-color: #992d22;
     }
+
+   
     /* estilos para exibir dados do comprador */
     .dados-comprador {
       background-color: #fff3e0;

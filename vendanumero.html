@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
-  <script src="venda.js" defer></script>
 </head>
 <body>
   <section class="container">
@@ -25,13 +24,14 @@
         <div class="botoes">
           <button type="button" class="save">Salvar</button>
           <button type="button" class="cancel">Cancelar</button>
+          <button type="button" class="edit" style="display: none;">Alterar Dados</button>
         </div>
       </form>
     </div>
   </section>
 
   <script>
-   document.addEventListener("DOMContentLoaded", async () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       const params = new URLSearchParams(window.location.search);
       const numero = params.get("numero");
 
@@ -40,28 +40,33 @@
       const inputTelefone = document.getElementById("telefone");
       const botaoSalvar = document.querySelector(".save");
       const botaoCancelar = document.querySelector(".cancel");
+      const botaoEditar = document.querySelector(".edit");
 
       h1.textContent = `Número Selecionado: ${numero}`;
 
+      let vendaExistente = null;
+
       // Verificar se já está vendido
       const { data } = await supabase.from("vendas").select("*").eq("numero", parseInt(numero)).single();
+      vendaExistente = data;
 
       if (data) {
-        // Mostrar dados comprador
         inputNome.value = data.nome_comprador;
         inputTelefone.value = data.telefone;
 
         inputNome.disabled = true;
         inputTelefone.disabled = true;
+
         botaoSalvar.style.display = "none";
         botaoCancelar.style.display = "block";
+        botaoEditar.style.display = "block";
       } else {
-        // Formulário ativo
         botaoSalvar.style.display = "block";
         botaoCancelar.style.display = "none";
+        botaoEditar.style.display = "none";
       }
 
-      // Salvar venda
+      // Salvar ou atualizar venda
       botaoSalvar.addEventListener("click", async () => {
         const nome = inputNome.value.trim();
         const telefone = inputTelefone.value.trim();
@@ -71,13 +76,17 @@
           return;
         }
 
-        await supabase.from("vendas").insert({
-          numero: parseInt(numero),
-          nome_comprador: nome,
-          telefone: telefone
-        });
+        if (vendaExistente) {
+          await supabase.from("vendas")
+            .update({ nome_comprador: nome, telefone: telefone })
+            .eq("numero", parseInt(numero));
+          alert("Dados atualizados!");
+        } else {
+          await supabase.from("vendas")
+            .insert({ numero: parseInt(numero), nome_comprador: nome, telefone: telefone });
+          alert("Venda salva!");
+        }
 
-        alert("Venda salva!");
         window.location.href = "index.html";
       });
 
@@ -89,6 +98,15 @@
           alert("Venda cancelada!");
           window.location.href = "index.html";
         }
+      });
+
+      // Editar dados
+      botaoEditar.addEventListener("click", () => {
+        inputNome.disabled = false;
+        inputTelefone.disabled = false;
+        botaoSalvar.textContent = "Salvar Alterações";
+        botaoSalvar.style.display = "block";
+        botaoEditar.style.display = "none";
       });
 
       // Formatar telefone
